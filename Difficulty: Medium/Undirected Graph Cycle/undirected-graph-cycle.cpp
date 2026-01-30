@@ -1,23 +1,14 @@
 class Solution {
   public:
-    bool detect(int src , vector<vector<int>>& adj , vector<int>& visited){
+    bool dfs(int src , int parent , vector<vector<int>>& adj , vector<int>& visited){
         visited[src] = 1;
-        queue<pair<int,int>> q;
-        q.push({src,-1}); //src , parent
         
-        while(!q.empty()){
-            int node = q.front().first;
-            int parent = q.front().second;
-            
-            q.pop();
-            
-            for(auto neigh : adj[node]){
-                if(!visited[neigh]){
-                    q.push({neigh,node});
-                    visited[neigh] = 1;
-                } else if(parent!=neigh){
-                        return true;
-                }
+        for(auto neigh : adj[src]){
+            if(!visited[neigh]){
+                if(dfs(neigh,src,adj,visited)) return true;
+            }
+            else if(neigh!=parent){
+                return true;
             }
         }
         
@@ -27,9 +18,9 @@ class Solution {
     bool isCycle(int V, vector<vector<int>>& edges) {
         // Code here
         vector<vector<int>> adj(V);
-        for(auto& e : edges){
-            int u = e[0];
-            int v = e[1];
+        for(vector<int> i : edges){
+            int u = i[0];
+            int v = i[1];
             adj[u].push_back(v);
             adj[v].push_back(u);
         }
@@ -37,7 +28,7 @@ class Solution {
         vector<int> visited(V,0);
         for(int i=0;i<V;i++){
             if(!visited[i]){
-                if(detect(i,adj,visited)) return true;
+                if(dfs(i,-1,adj,visited)) return true;
             }
         }
         
