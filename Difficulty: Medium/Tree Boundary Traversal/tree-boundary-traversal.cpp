@@ -1,5 +1,4 @@
 /*
-// Tree Node
 class Node {
   public:
     int data;
@@ -17,74 +16,59 @@ class Node {
 
 class Solution {
   public:
-    void leafNode(vector<int>& result , Node* root){
-        if(root == NULL){
-            return;
-        }
+    void leftView(Node* root , vector<int>& result){
+        if(!root) return ;
         
-        if(root->left == NULL && root->right == NULL){
-            result.push_back(root->data);
-            return;
-        }
-        
-        leafNode(result,root->left);
-        leafNode(result,root->right);
-        
-    }
-    
-    void leftView(vector<int>& result,Node* root){
-        if(root == NULL){
-            return;
-        }
-        
-        if(root->left == NULL && root->right == NULL){
-            return;
-        }
+        if(!root->left && !root->right) return ;
         
         result.push_back(root->data);
-        if(root->left != NULL){
-            leftView(result,root->left);
-        } else{
-            leftView(result,root->right);
-        }
+        
+        if(root->left) leftView(root->left , result);
+        else leftView(root->right , result);
     }
     
-    void rightView(vector<int>& result,Node* root){
-        if(root == NULL){
-            return;
-        }
+    void rightView(Node* root , vector<int>& rightBoundary){
+        if(!root) return ;
         
-        if(root->left == NULL && root->right == NULL){
-            return;
-        }
+        if(!root->left && !root->right) return ;
         
-        if(root->right != NULL){
-            rightView(result,root->right);
-        } else{
-            rightView(result,root->left);
-        }
+        rightBoundary.push_back(root->data);
         
-        if(find(result.begin(),result.end(),root->data) == result.end()){
+        if(root->right) rightView(root->right , rightBoundary);
+        else rightView(root->left , rightBoundary);
+    }
+    
+    void leafNode(Node* root , vector<int>& result){
+        if(!root) return;
+        
+        if(!root->left && !root->right){
             result.push_back(root->data);
+            return;
         }
+        
+        leafNode(root->left , result);
+        leafNode(root->right , result);
     }
-    
     
     vector<int> boundaryTraversal(Node *root) {
         // code here
         vector<int> result;
-        if(root==NULL) return result;
-        result.push_back(root->data);
-        leftView(result,root->left);
+        if(!root) return result;
         
-        if(!(root->left == NULL && root->right == NULL)){
-            leafNode(result,root);
-        }
+        result.push_back(root->data);
+        
+        leftView(root->left , result);
+        
+        leafNode(root->left , result);
+        leafNode(root->right , result);
         
         vector<int> rightBoundary;
-        rightView(rightBoundary,root->right);
-        result.insert(result.end(),rightBoundary.begin(),rightBoundary.end());
-        return result;
+        rightView(root->right , rightBoundary);
         
+        reverse(rightBoundary.begin() , rightBoundary.end());
+        
+        result.insert(result.end() ,  rightBoundary.begin() , rightBoundary.end());
+        
+        return result;
     }
 };
